@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Callout, Text, TextField } from "@radix-ui/themes";
+import { Button, Callout, TextField } from "@radix-ui/themes";
 import SimpleMDE from "react-simplemde-editor";
 import axios from "axios";
 import { useForm, Controller } from "react-hook-form";
@@ -27,6 +27,16 @@ const NewIssuePage = () => {
   });
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const onSubmit = handleSubmit(async (data) => {
+    try {
+      setIsSubmitting(true);
+      await axios.post("/api/issues", data);
+      router.push("/issues");
+    } catch (error) {
+      setIsSubmitting(false);
+      setError("An unexpected error occurred.");
+    }
+  })
   return (
     <div className="max-w-xl">
       {error && (
@@ -36,16 +46,7 @@ const NewIssuePage = () => {
       )}
       <form
         className="space-y-3"
-        onSubmit={handleSubmit(async (data) => {
-          try {
-            setIsSubmitting(true);
-            await axios.post("/api/issues", data);
-            router.push("/issues");
-          } catch (error) {
-            setIsSubmitting(false);
-            setError("An unexpected error occurred.");
-          }
-        })}
+        onSubmit={onSubmit}
       >
         <TextField.Root>
           <TextField.Input placeholder="Title" {...register("title")} />
